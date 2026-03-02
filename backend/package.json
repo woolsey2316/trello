@@ -1,0 +1,35 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Node.js, Express, and MongoDB REST CRUD API",
+  "type": "module",
+  "main": "server.tsx",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "format": "prettier --write {**/,}*.ts",
+    "lint": "prettier --check {**/,}*.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.2",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.4",
+    "dotenv": "^17.3.1",
+    "express": "^4.17.1",
+    "lodash": "^4.17.13",
+    "mongodb": "^3.0.7",
+    "mongoose": "^6.0.9",
+    "simple-node-logger": "^18.12.23",
+    "validator": "^13.7.0"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.3.3",
+    "typescript": "^5.9.3"
+  }
+}
