@@ -1,23 +1,11 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom/client";
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import App from "./app.js";
-import "./index.css";
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import App from './app.js';
+import * as serviceWorker from './serviceWorker.js';
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
+createRoot(document.getElementById('root')!).render(<App />);
 
-  },
-
-]);
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>
-);
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
+serviceWorker.register();

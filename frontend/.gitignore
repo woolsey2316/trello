@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+
+# Build artifacts
+/dist
+/build
+/out
+/*.js # Ignore all generated JS files in the root (adjust as needed)
+/*.js.map # Ignore sourcemaps
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Testing and coverage
+/coverage
+
+# Editor/IDE-specific files
+.vscode
+.idea
+*.suo
+*.user
+*.casc
+
+# OS-specific files
+.DS_Store
+Thumbs.db
