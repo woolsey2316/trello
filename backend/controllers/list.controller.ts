@@ -14,7 +14,18 @@ export class ListController {
     }
   }
 
-  static async getListById(req: Request, res: Response) {
+  static async getListsByBoardId(req: Request, res: Response) {
+    try {
+      const list = await List.find({ boardId: req.params.boardId });
+      if (!list) return res.status(404).json({ error: 'List not found' });
+      res.json(list);
+    } catch (err: unknown) {
+      const error = err as Error;
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async getListsById(req: Request, res: Response) {
     try {
       const list = await List.findById(req.params.id);
       if (!list) return res.status(404).json({ error: 'List not found' });

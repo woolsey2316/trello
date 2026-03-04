@@ -3,11 +3,11 @@ import { BoardController } from "../controllers/board.controller.js";
 
 const router = Router();
 
-router.get("/", BoardController.getAllBoards);
+router.get("/user/:userId", BoardController.getAllBoardsByUser);
 router.post("/", BoardController.createBoard);
-router.get("/:id", BoardController.getBoardById);
-router.put("/:id", BoardController.updateBoardName);
-router.patch("/:id", BoardController.updateBoardLists);
-router.delete("/:id", BoardController.deleteBoard);
+router.get("/:boardId/user/:userId", BoardController.getBoardById);
+router.patch("/:id", BoardController.updateBoardName);
+router.put("/:id", BoardController.addListToBoard);
+router.delete("/:id/user/:userId", BoardController.deleteBoard);
 
 export default router;

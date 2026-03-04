@@ -3,23 +3,30 @@ import { useNavigate } from "react-router-dom";
 import {
   useBoards,
   createBoard,
-  updateBoard,
+  updateBoardName,
   deleteBoard,
   type Board,
 } from "../api/boards.js";
+import useAuthRedirect from "../hooks/useAuthRedirect.js";
+import ConfirmDeleteModal from "../modals/ConfirmDeleteModal.js";
 
 const BoardsPage = () => {
-  const { data: boards, error, isLoading, mutate } = useBoards();
+  const userId = useAuthRedirect();
+  const { data: boards, error, isLoading, mutate } = useBoards(userId!);
   const navigate = useNavigate();
 
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const [confirmDeleteModal, setConfirmDeleteModal] = useState<{
+    open: boolean;
+    boardId: string | null;
+  }>({ open: false, boardId: null });
 
   const handleCreate = async () => {
     if (!newName.trim()) return;
-    const board = await createBoard(newName.trim());
+    const board = await createBoard(newName.trim(), userId!);
     mutate([...(boards ?? []), board]);
     setNewName("");
     setCreating(false);
@@ -30,13 +37,13 @@ const BoardsPage = () => {
       setEditingId(null);
       return;
     }
-    const updated = await updateBoard(board._id, editName.trim());
+    const updated = await updateBoardName({ id: board._id, name: editName.trim(), userId: userId! });
     mutate(boards?.map((b) => (b._id === board._id ? updated : b)));
     setEditingId(null);
   };
 
   const handleDelete = async (id: string) => {
-    await deleteBoard(id);
+    await deleteBoard(id, userId!);
     mutate(boards?.filter((b) => b._id !== id));
   };
 
@@ -87,7 +94,7 @@ const BoardsPage = () => {
                 ✏️
               </button>
               <button
-                onClick={() => handleDelete(board._id)}
+                onClick={() => setConfirmDeleteModal({ open: true, boardId: board._id })}
                 className="bg-red-500/70 hover:bg-red-600 text-white text-xs px-2 py-1 rounded"
               >
                 🗑️
@@ -137,6 +144,13 @@ const BoardsPage = () => {
           </button>
         )}
       </div>
+      <ConfirmDeleteModal
+        open={confirmDeleteModal.open}
+        onClose={() => setConfirmDeleteModal({ open: false, boardId: null })}
+        onConfirm={() => {
+          if (confirmDeleteModal.boardId) handleDelete(confirmDeleteModal.boardId);
+        }}
+      />
     </div>
   );
 };

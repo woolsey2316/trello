@@ -1,48 +1,35 @@
 import { useParams, useNavigate } from "react-router-dom";
-import useSWR from "swr";
 import { useState } from "react";
-import { authFetcher } from "../api/client.js";
+import { useAddListToBoard, useBoard } from "../api/boards.js";
 import List from "../components/List.js";
-
-const API = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
-
-type Card = { id: string; text: string };
-type ListType = { id: string; title: string; cards: Card[] };
+import useAuthRedirect from "../hooks/useAuthRedirect.js";
 
 const BoardPage = () => {
+  const userId = useAuthRedirect();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: board, isLoading, error } = useSWR(
-    `${API}/api/boards/${id}`,
-    authFetcher
-  );
-
-  const [lists, setLists] = useState<ListType[]>([]);
+  const { data: board } = useBoard(id!, userId!);
+  const { isMutating, error, data: updatedBoard, trigger } = useAddListToBoard();
   const [addingList, setAddingList] = useState(false);
   const [listTitle, setListTitle] = useState("");
 
   const handleAddList = () => {
     if (listTitle.trim()) {
-      setLists([
-        ...lists,
-        { id: crypto.randomUUID(), title: listTitle.trim(), cards: [] },
-      ]);
+      trigger({
+        id: id!,
+        name: listTitle.trim(),
+        userId: userId!,
+      });
       setListTitle("");
       setAddingList(false);
     }
   };
 
   const handleAddCard = (listId: string, text: string) => {
-    setLists(
-      lists.map((list) =>
-        list.id === listId
-          ? { ...list, cards: [...list.cards, { id: crypto.randomUUID(), text }] }
-          : list
-      )
-    );
+
   };
 
-  if (isLoading) return <div className="min-h-screen bg-blue-700 p-6 text-white">Loading…</div>;
+  if (isMutating) return <div className="min-h-screen bg-blue-700 p-6 text-white">Loading…</div>;
   if (error) return <div className="min-h-screen bg-blue-700 p-6 text-red-300">Board not found.</div>;
 
   return (
@@ -58,8 +45,8 @@ const BoardPage = () => {
       </div>
 
       <div className="flex gap-4 items-start overflow-x-auto pb-4">
-        {lists.map((list) => (
-          <List key={list.id} list={list} onAddCard={handleAddCard} />
+        {board?.lists?.map((list) => (
+          <List key={list._id} list={list} onAddCard={handleAddCard} />
         ))}
 
         {addingList ? (

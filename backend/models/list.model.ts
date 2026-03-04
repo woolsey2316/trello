@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IList extends Document {
   name: string;
-  cardIds: mongoose.Types.ObjectId[];
+  cards: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -10,7 +10,7 @@ export interface IList extends Document {
 const ListSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
-    cardIds: [{ type: mongoose.Types.ObjectId, ref: 'Card' }],
+    cards: [{ type: mongoose.Types.ObjectId, ref: 'Card' }],
   },
   { timestamps: true }
 );

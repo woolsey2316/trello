@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { setToken } from "../api/client.js";
+import { setToken, setUserId } from "../api/client.js";
+import { jwtDecode } from "jwt-decode";
 
 const AuthCallbackPage = () => {
   const navigate = useNavigate();
@@ -9,7 +10,9 @@ const AuthCallbackPage = () => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
     if (token) {
-      setToken(token);
+      setToken(token)
+      const userId = jwtDecode(token)?.sub;
+      setUserId(userId || "");
       navigate("/", { replace: true });
     } else {
       navigate("/login", { replace: true });

@@ -3,7 +3,7 @@ import { useState } from "react";
 type Card = { id: string; text: string };
 
 type ListProps = {
-  list: { id: string; title: string; cards: Card[] };
+  list: { _id: string; name: string; cards: Card[] };
   onAddCard: (listId: string, text: string) => void;
 };
 
@@ -13,7 +13,7 @@ const List = ({ list, onAddCard }: ListProps) => {
 
   const handleAddCard = () => {
     if (cardText.trim()) {
-      onAddCard(list.id, cardText.trim());
+      onAddCard(list._id, cardText.trim());
       setCardText("");
       setAddingCard(false);
     }
@@ -21,7 +21,7 @@ const List = ({ list, onAddCard }: ListProps) => {
 
   return (
     <div className="bg-gray-100 rounded-xl w-64 shrink-0 p-3 flex flex-col gap-2 max-h-full">
-      <h2 className="font-semibold text-sm text-gray-800 px-1">{list.title}</h2>
+      <h2 className="font-semibold text-sm text-gray-800 px-1">{list.name}</h2>
 
       <div className="flex flex-col gap-2 overflow-y-auto">
         {list.cards.map((card) => (
