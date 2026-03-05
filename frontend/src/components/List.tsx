@@ -1,15 +1,36 @@
-import { useState } from "react";
-
-type Card = { id: string; text: string };
+import React, { useState } from "react";
+import { type Card } from "../api/cards.js";
 
 type ListProps = {
   list: { _id: string; name: string; cards: Card[] };
   onAddCard: (listId: string, text: string) => void;
+  onCardClick: (card: Card) => void;
+  onCardDragStart: (cardId: string, fromListId: string) => void;
+  onCardDrop: (toListId: string, toIndex: number) => void;
 };
 
-const List = ({ list, onAddCard }: ListProps) => {
+const DropSlot = ({
+  active,
+  onDragOver,
+  onDrop,
+}: {
+  active: boolean;
+  onDragOver: () => void;
+  onDrop: (e: React.DragEvent) => void;
+}) => (
+  <div
+    className={`transition-all rounded ${active ? "h-8 bg-blue-200 border-2 border-dashed border-blue-400 my-0.5" : "h-1"
+      }`}
+    onDragOver={(e) => { e.preventDefault(); onDragOver(); }}
+    onDrop={onDrop}
+  />
+);
+
+const List = ({ list, onAddCard, onCardClick, onCardDragStart, onCardDrop }: ListProps) => {
   const [addingCard, setAddingCard] = useState(false);
   const [cardText, setCardText] = useState("");
+  const [isHovering, setIsHovering] = useState(false);
+  const [dragOverSlot, setDragOverSlot] = useState<number | null>(null);
 
   const handleAddCard = () => {
     if (cardText.trim()) {
@@ -19,18 +40,90 @@ const List = ({ list, onAddCard }: ListProps) => {
     }
   };
 
+  const handleSlotDrop = (e: React.DragEvent, index: number) => {
+    e.stopPropagation();
+    setDragOverSlot(null);
+    onCardDrop(list._id, index);
+  };
+
   return (
-    <div className="bg-gray-100 rounded-xl w-64 shrink-0 p-3 flex flex-col gap-2 max-h-full">
+    <div
+      className={`rounded-xl w-64 shrink-0 p-3 flex flex-col gap-2 max-h-full transition-colors ${dragOverSlot !== null ? "bg-blue-100 ring-2 ring-blue-300" : "bg-gray-100"
+        }`}
+      onDragOver={(e) => e.preventDefault()}
+      onDragLeave={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverSlot(null);
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        // Fallback: only fires if no slot captured it (e.g. empty list or dropped on header)
+        if (dragOverSlot === null) onCardDrop(list._id, list.cards.length);
+        setDragOverSlot(null);
+      }}
+    >
       <h2 className="font-semibold text-sm text-gray-800 px-1">{list.name}</h2>
 
-      <div className="flex flex-col gap-2 overflow-y-auto">
-        {list.cards.map((card) => (
-          <div
-            key={card.id}
-            className="bg-white rounded-lg shadow-sm px-3 py-2 text-sm text-gray-700"
-          >
-            {card.text}
-          </div>
+      <div className="flex flex-col overflow-y-auto px-1">
+        <DropSlot
+          active={dragOverSlot === 0}
+          onDragOver={() => setDragOverSlot(0)}
+          onDrop={(e) => handleSlotDrop(e, 0)}
+        />
+
+        {list.cards.map((card, idx) => (
+          <React.Fragment key={card._id}>
+            <div
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.effectAllowed = "move";
+                onCardDragStart(card._id, list._id);
+              }}
+              onClick={() => onCardClick(card)}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+              className="bg-white rounded-lg shadow-sm px-3 py-2 text-sm text-gray-700 cursor-grab active:cursor-grabbing hover:outline-2 hover:outline-blue-500 hover:outline-double transition-colors"
+            >
+              {card.labels && card.labels.length > 0 && (
+                <div className="flex gap-1 flex-wrap mb-1">
+                  {isHovering ? card.labels.map((l) => (
+                    <span
+                      key={(l as any).value ?? l}
+                      className={`inline-block px-2 min-h-2 min-w-8 rounded-full ${(l as any).colourClass ?? ""} ${(l as any).textColor ?? ""} opacity-80`}
+                    >
+                      {(l as any).text ?? l}
+                    </span>
+                  )) : card.labels.map((l) => (
+                    <span
+                      key={(l as any).value ?? l}
+                      className={`inline-block h-2 w-8 rounded-full ${(l as any).colourClass ?? `bg-${l}-500`} opacity-80`}
+                    />
+                  ))}
+                </div>
+              )}
+              <p className="text-gray-800">{card.title}</p>
+              {card.dueDate && (
+                new Date(card.dueDate) < new Date() ?
+                  <p className="text-xs bg-red-500 opacity-70 text-white mt-1 py-1 px-2 rounded">
+                    ⏰ {new Date(card.dueDate).toLocaleDateString()}
+                  </p>
+                  :
+                  <p className="text-xs text-gray-500 mt-1">
+                    📅 {new Date(card.dueDate).toLocaleDateString()}
+                  </p>
+              )}
+              {card.checklist && card.checklist.length > 0 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  ✓ {card.checklist.filter((i) => i.done).length}/{card.checklist.length}
+                </p>
+              )}
+            </div>
+
+            <DropSlot
+              active={dragOverSlot === idx + 1}
+              onDragOver={() => setDragOverSlot(idx + 1)}
+              onDrop={(e) => handleSlotDrop(e, idx + 1)}
+            />
+          </React.Fragment>
         ))}
       </div>
 
@@ -82,3 +175,4 @@ const List = ({ list, onAddCard }: ListProps) => {
 };
 
 export default List;
+

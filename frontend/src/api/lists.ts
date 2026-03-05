@@ -4,11 +4,14 @@ import { authFetcher, authFetch } from './client.js';
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
+import { type Card } from './cards.js';
+
 export type List = {
   _id: string;
   name: string;
   boardId: string;
   userId: string;
+  cards: Card[];
   createdAt: string;
   updatedAt: string;
 };
