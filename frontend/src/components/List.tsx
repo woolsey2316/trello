@@ -29,7 +29,7 @@ const DropSlot = ({
 const List = ({ list, onAddCard, onCardClick, onCardDragStart, onCardDrop }: ListProps) => {
   const [addingCard, setAddingCard] = useState(false);
   const [cardText, setCardText] = useState("");
-  const [isHovering, setIsHovering] = useState(false);
+  const [isHovering, setIsHovering] = useState(-1);
   const [dragOverSlot, setDragOverSlot] = useState<number | null>(null);
 
   const handleAddCard = () => {
@@ -79,24 +79,26 @@ const List = ({ list, onAddCard, onCardClick, onCardDragStart, onCardDrop }: Lis
                 onCardDragStart(card._id, list._id);
               }}
               onClick={() => onCardClick(card)}
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
+              onMouseEnter={() => setIsHovering(idx)}
+              onMouseLeave={() => setIsHovering(-1)}
               className="bg-white rounded-lg shadow-sm px-3 py-2 text-sm text-gray-700 cursor-grab active:cursor-grabbing hover:outline-2 hover:outline-blue-500 hover:outline-double transition-colors"
             >
               {card.labels && card.labels.length > 0 && (
                 <div className="flex gap-1 flex-wrap mb-1">
-                  {isHovering ? card.labels.map((l) => (
-                    <span
-                      key={(l as any).value ?? l}
-                      className={`inline-block px-2 min-h-2 min-w-8 rounded-full ${(l as any).colourClass ?? ""} ${(l as any).textColor ?? ""} opacity-80`}
-                    >
-                      {(l as any).text ?? l}
-                    </span>
-                  )) : card.labels.map((l) => (
-                    <span
-                      key={(l as any).value ?? l}
-                      className={`inline-block h-2 w-8 rounded-full ${(l as any).colourClass ?? `bg-${l}-500`} opacity-80`}
-                    />
+                  {card.labels.map((l, index) => (
+                    (isHovering !== idx) ?
+                      <span
+                        key={l.value}
+                        className={`inline-block h-2 w-8 rounded-full ${(l as any).colourClass ?? `bg-${l}-500`} opacity-80`}
+                      />
+
+                      :
+                      <span
+                        key={l.value}
+                        className={`inline-block px-2 transition-all min-h-2 min-w-8 rounded-full ${l.colourClass ?? ""} ${l.textColor ?? ""} opacity-80`}
+                      >
+                        {l.text}
+                      </span>
                   ))}
                 </div>
               )}
