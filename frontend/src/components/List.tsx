@@ -54,13 +54,16 @@ const CardItem = ({ card, onCardClick, onDragStart, listId }: CardItemProps) => 
         {/* Checkbox with burst */}
         <div className="relative shrink-0 mt-0.5">
           {showBurst &&
-            BURST_ANGLES.map((angle) => (
-              <span
-                key={angle}
-                className="card-burst-line"
-                style={{ "--r": `${angle}deg` } as React.CSSProperties}
-              />
-            ))}
+            <div className="absolute -left-1.5 -top-1.5 overflow-hidden w-7 h-7 rounded-full">
+              {BURST_ANGLES.map((angle, ind) => (
+                <span
+                  key={angle}
+                  className={`card-burst-line${ind % 2 === 0 ? "-even" : "-odd"}`}
+                  style={{ "--r": `${angle}deg` } as React.CSSProperties}
+                />
+              ))}
+            </div>
+          }
           <button
             onClick={handleCheckboxClick}
             aria-label={completed ? "Mark incomplete" : "Mark complete"}
