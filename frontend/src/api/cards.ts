@@ -3,6 +3,13 @@ import { authFetch } from './client.js';
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
+export type Label = {
+  value: string;
+  colourClass: string;
+  text?: string;
+  textColor?: string;
+};
+
 export type ChecklistItem = {
   _id?: string;
   text: string;
@@ -15,9 +22,10 @@ export type Card = {
   description?: string;
   attachmentPath?: string;
   assignedTo?: string[];
-  labels?: { value: string, colourClass: string, text: string, textColor: string }[];
+  labels?: Label[];
   dueDate?: string;
   checklist?: ChecklistItem[];
+  completed?: boolean;
   createdAt: string;
   updatedAt: string;
 };

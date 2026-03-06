@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Card completion burst animation */
+@keyframes card-burst {
+  0%   { transform: rotate(var(--r)) translateY(-6px)  scaleY(0.3); opacity: 1; }
+  50%  { transform: rotate(var(--r)) translateY(-12px) scaleY(1);   opacity: 1; }
+  100% { transform: rotate(var(--r)) translateY(-18px) scaleY(0.6); opacity: 0; }
+}
+
+.card-burst-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 8px;
+  margin-left: -1px;
+  margin-top: -8px; /* bottom edge sits at circle centre */
+  background-color: #16a34a;
+  border-radius: 2px;
+  transform-origin: bottom center;
+  animation: card-burst 0.55s ease-out forwards;
+  pointer-events: none;
+}

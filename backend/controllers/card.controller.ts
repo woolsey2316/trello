@@ -40,10 +40,10 @@ export class CardController {
 
   static async updateCard(req: Request, res: Response) {
     try {
-      const { title, description, dueDate, labels, assignedTo, checklist } = req.body;
+      const { title, description, dueDate, labels, assignedTo, checklist, completed } = req.body;
       const updatedCard = await Card.findByIdAndUpdate(
         req.params.id,
-        { title, description, dueDate, labels, assignedTo, checklist },
+        { title, description, dueDate, labels, assignedTo, checklist, completed },
         { new: true }
       );
       if (!updatedCard) return res.status(404).json({ error: 'Card not found' });

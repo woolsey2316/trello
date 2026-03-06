@@ -11,11 +11,19 @@ export interface ICard extends Document {
   description?: string;
   attachmentPath?: string;
   assignedTo?: mongoose.Types.ObjectId[];
-  labels?: string[];
+  labels?: ILabel[];
   dueDate?: Date;
   checklist?: IChecklistItem[];
+  completed?: boolean;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface ILabel {
+  value: string;
+  colourClass: string;
+  text?: string;
+  textColor?: string;
 }
 
 const ChecklistItemSchema = new Schema({
@@ -39,6 +47,7 @@ const CardSchema: Schema = new Schema(
     labels: [LabelSchema],
     dueDate: { type: Date },
     checklist: [ChecklistItemSchema],
+    completed: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -22,8 +22,8 @@ interface EditCardModalProps {
 interface Labels {
   value: string;
   colourClass: string;
-  text: string;
-  textColor: string;
+  text?: string;
+  textColor?: string;
 }
 
 const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onSaved }) => {
@@ -152,7 +152,7 @@ const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onSaved })
                       if (e.key === "Enter") setIsEditingLabelText(-1);
                       if (e.key === "Escape") {
                         setIsEditingLabelText(-1);
-                        setLabels((prev) => prev.map((label) => label.value === l.value ? { ...label, text: l.text } : label));
+                        setLabels((prev) => prev.map((label) => label.value === l.value ? { ...label, text: l.text ?? "" } : label));
                       }
                     }}
                     className={`${bg} ${l.textColor} text-xs px-2 py-0.5 rounded-full focus:outline-none`
